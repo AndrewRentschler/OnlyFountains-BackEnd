@@ -17,7 +17,7 @@ const searchDrinkingFountains = async (req, res) => {
   const bbox3 = latitude + latDelta;
   const bbox4 = longitude + lonDelta;
 
-  // const bbox = `${(latitude - latDelta)},${(longitude - lonDelta)},${(latitude + latDelta)},${(longitude + lonDelta)}`;
+  // BOUNDING BOX LAYOUT! `${(latitude - latDelta)},${(longitude - lonDelta)},${(latitude + latDelta)},${(longitude + lonDelta)}`;
   const bbox = `${bbox1},${bbox2},${bbox3},${bbox4}`;
 
   // Fetch drinking fountains from OpenStreetMap
@@ -34,7 +34,6 @@ const searchDrinkingFountains = async (req, res) => {
             body: `[out:json];node["amenity"="drinking_water"](${bbox});out;`
         })
       const data = await response.json()
-
       return data;
     } catch (error) {
       console.error('Error occurred while fetching drinking fountains:', error);
@@ -42,7 +41,6 @@ const searchDrinkingFountains = async (req, res) => {
     }
   }
   const foundFountains = await findDrinkingFountains(latitude, longitude, radius)
-  console.log(foundFountains, "foundFountains")
   createNewFountain(foundFountains)
   // Convert the response to JSON
   res.status(200).json(foundFountains)
@@ -62,9 +60,8 @@ async function createNewFountain(foundFountains) {
         name: '',
       })
       res.status(201).json(newFountain)
-      // console.log(newFountain, "N E W F O U N T A I N")
     } catch (error) {
-      console.log(error, "error")
+      console.log("error")
     }
   })
 }
@@ -72,44 +69,12 @@ async function createNewFountain(foundFountains) {
 async function index(req, res) {
   try {
     const fountains = await Fountain.findAll()
-    res.json(fountains)
+    res.status(304).json(fountains)
   } catch (err) {
     console.log(err)
     res.status(500).json(err)
   }
 }
-
-
-// Helper function to calculate distance using Haversine formula
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radius of the Earth in kilometers
-  const dLat = degToRad(lat2 - lat1);
-  const dLon = degToRad(lon2 - lon1);
-
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(degToRad(lat1)) * Math.cos(degToRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c;
-
-  return distance;
-}
-// Helper function to convert degrees to radians
-const degToRad = (degrees) => {
-  return degrees * (Math.PI / 180);
-};
-
-async function getRatings(req, res) {
-  try {
-    const fountain = await Fountain
-    const ratings = await fountain.getRatings() // Get all ratings for this fountain
-    res.json(ratings)
-  } catch (err) {
-    console.log(err)
-    res.status(500).json(err)
-  }
-}
-
-
 
 async function show(req, res) {
   try {
@@ -143,4 +108,4 @@ async function destroy(req, res) {
   }
 }
 
-module.exports = { show, update, destroy, searchDrinkingFountains, index, createNewFountain, getRatings}
+module.exports = { show, update, destroy, searchDrinkingFountains, index, createNewFountain}

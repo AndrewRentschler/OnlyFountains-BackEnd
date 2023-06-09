@@ -9,6 +9,7 @@ const { decodeUserFromToken, checkAuth } = middleware
 
 /*---------- Protected Routes ----------*/
 router.get('/:lat/:lon/:rad', fountainsCtrl.searchDrinkingFountains)
+router.get('/', fountainsCtrl.index)
 router.get('/:id', fountainsCtrl.show)
 router.put('/:id', checkAuth, fountainsCtrl.update)
 router.delete('/:id', checkAuth, fountainsCtrl.destroy)

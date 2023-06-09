@@ -1,5 +1,4 @@
 const Rating = require('../models').Rating;
-const Fountain = require('../models').Fountain;
 
 async function index(req, res) {
   try {
